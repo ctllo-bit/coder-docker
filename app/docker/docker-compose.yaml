@@ -8,7 +8,7 @@ services:
     ports:
       - "5333:8080"    # 端口如果冲突请修改冒号前面的端口号，冒号后面的不要改。
     volumes:
-      - "/var/apps/vs-code/shares/data/.config:/home/coder/.config"  # 配置文件路径
+      - "/var/apps/vs-code/shares/data:/home/coder/.config/code-server"  # 配置文件路径
       - "/vol1/1000/VscodeProject:/home/coder/project"  # 项目路径
     user: "1000:1001"
     environment:
