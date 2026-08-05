@@ -1,24 +1,24 @@
 {
     ".url": {
-        "vs-code.main": {
-            "title": "VS Code桌面版",
+        "coder-docker.main": {
+            "title": "Code 桌面版",
             "icon": "images/icon_{0}.png",
             "type": "iframe",
             "protocol": "",
             "gatewaySocket": "app.sock",
-            "gatewayPrefix": "/app/vs-code",
-            "url": "/app/vs-code/",
-            "allUsers": true
+            "gatewayPrefix": "/app/coder-docker",
+            "url": "/app/coder-docker/",
+            "allUsers": false
         },
-        "vs-code.Application": {
-            "title": "VS Code外链版",
+        "coder-docker.Application": {
+            "title": "Code 外链版",
             "icon": "images/code_icon_{0}.png",
             "type": "url",
             "protocol": "",
             "gatewaySocket": "app.sock",
-            "gatewayPrefix": "/app/vs-code",
-            "url": "/app/vs-code/",
-            "allUsers": true
+            "gatewayPrefix": "/app/coder-docker",
+            "url": "/app/coder-docker/",
+            "allUsers": false
         }
     }
 }

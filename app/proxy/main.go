@@ -22,7 +22,7 @@ var (
 	rootDir          = "/usr/lib/code-server"
 	codeServerSocket = flag.String("socket", "/home/coder/target/code-server.sock", "upstream code-server unix socket")
 	proxySocket      = flag.String("proxy-socket", "/home/coder/target/app.sock", "this proxy's own unix socket")
-	prefix           = flag.String("prefix", "/app/vs-code", "URL prefix to strip before forwarding")
+	prefix           = flag.String("prefix", "/app/coder-docker", "URL prefix to strip before forwarding")
 )
 
 func main() {
@@ -152,9 +152,10 @@ func startCodeSocket() *exec.Cmd {
 	node := filepath.Join(rootDir, "lib", "node")
 	entry := filepath.Join(rootDir, "out", "node", "entry.js")
 
-	// 注入内部 Socket 参数，让 code-server 知道该监听哪里
-	//args := append([]string{entry}, codeServerArgs...)
-	args := append([]string{entry}, "--socket", *codeServerSocket)
+	// "--extensions-dir", "/var/apps/openvscode/shares/data/extensions",
+	// 	"--user-data-dir", "/var/apps/openvscode/shares/data/userdata",
+
+	args := []string{entry, "/home/coder/project"}
 
 	cmd := exec.Command(node, args...)
 	cmd.Stdin = os.Stdin

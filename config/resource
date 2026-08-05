@@ -4,7 +4,7 @@
         "projects":
         [
             {
-                "name": "vs-code",
+                "name": "coder-docker",
                 "path": "docker"
             }
         ]
@@ -14,22 +14,22 @@
         "shares":
         [
             {
-                "name": "vs-code",
+                "name": "coder-docker",
                 "permission":
                 {
                     "rw":
                     [
-                        "docker-vs-code"
+                        "coder-docker"
                     ]
                 }
             },
             {
-                "name": "vs-code/data",
+                "name": "coder-docker/data",
                 "permission":
                 {
                     "rw":
                     [
-                        "docker-vs-code"
+                        "coder-docker"
                     ]
                 }
             }

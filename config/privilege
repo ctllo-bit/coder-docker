@@ -3,6 +3,6 @@
     {
         "run-as": "package"
     },
-    "username": "docker-vs-code",
-    "groupname": "docker-vs-code"
+    "username": "coder-docker",
+    "groupname": "coder-docker"
 }

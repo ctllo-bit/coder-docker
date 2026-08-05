@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# 配置code-server文件
-CONFIG_FILE="/var/apps/vs-code/etc/config.yaml"
-cat > "$CONFIG_FILE" <<EOF
-socket: /var/apps/target/vscode-server.sock
+cat > "${TRIM_PKGETC}/config.yaml" <<EOF
+socket: /home/coder/target/code-server.sock
 auth: none
 cert: false
 EOF
