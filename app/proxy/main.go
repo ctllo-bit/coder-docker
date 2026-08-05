@@ -18,11 +18,9 @@ import (
 	"time"
 )
 
-const rootDir = "/usr/lib/code-server"
-
 func main() {
-	upstreamSock := flag.String("socket", "/home/coder/.target/code-server.sock", "upstream code-server unix socket")
-	proxySock := flag.String("proxy-socket", "/home/coder/.target/app.sock", "this proxy's own unix socket")
+	upstreamSock := flag.String("socket", "/config/.target/code-server.sock", "upstream code-server unix socket")
+	proxySock := flag.String("proxy-socket", "/config/.target/app.sock", "this proxy's own unix socket")
 	prefix := flag.String("prefix", "/app/coder-docker", "URL prefix to strip")
 	flag.Parse()
 
@@ -37,7 +35,7 @@ func main() {
 	defer stop()
 
 	// 3. 异步启动 code-server 进程 (将 ctx 传入)
-	cmd := startCodeSocket(ctx)
+	cmd := startCodeSocket(ctx, *upstreamSock)
 
 	// 4. 开启子进程监控协程：如果子进程意外退出，则调用 stop() 联动关闭主进程
 	go func() {
@@ -146,13 +144,14 @@ func main() {
 	// 程序运行至此，由于有 defer，两个 Socket 都会被安全删除
 }
 
-func startCodeSocket(ctx context.Context) *exec.Cmd {
+func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
+	const rootDir = "/app/code-server"
 	node := filepath.Join(rootDir, "lib", "node")
 	entry := filepath.Join(rootDir, "out", "node", "entry.js")
 
 	args := []string{
 		entry,
-		"/home/coder/project",
+		"/config/workspace",
 	}
 
 	cmd := exec.CommandContext(ctx, node, args...)

@@ -2,18 +2,20 @@ version: "3.8"
 
 services:
   coder-docker:
-    image: codercom/code-server:latest
+    image: lscr.io/linuxserver/code-server:latest
     container_name: coder-docker
     restart: unless-stopped
+    ports:
+      - 8443:8443
     volumes:
-      - "${TRIM_APPDEST}:/home/coder/.target:rw"  # 容器内的工作目录
-      - "${TRIM_PKGETC}:/home/coder/.config/code-server"  # 配置文件路径
-      - "${wizard_work_path}:/home/coder/project"  # 项目路径
-    user: "1000:1000"
+      - "${TRIM_APPDEST}:/config/.target:rw"  # 映射到容器内
+      - "${TRIM_PKGETC}:/config/.config/code-server"  # 配置文件路径
+      - "${wizard_work_path}:/config/workspace"  # 项目路径
     environment:
-      - TZ=Asia/Shanghai
       - PUID=1000
       - PGID=1001
+      - TZ=Asia/Shanghai
+      - DEFAULT_WORKSPACE=/config/workspace
     entrypoint: []
-    command: ["/home/coder/.target/proxy/coder-proxy-linux-amd64"]
+    command: ["/config/.target/proxy/coder-proxy-linux-amd64"]
     network_mode: bridge
