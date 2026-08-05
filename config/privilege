@@ -1,8 +1,8 @@
 {
+    "username": "coder-docker",
+    "groupname": "coder-docker",
     "defaults":
     {
         "run-as": "package"
-    },
-    "username": "coder-docker",
-    "groupname": "coder-docker"
+    }
 }

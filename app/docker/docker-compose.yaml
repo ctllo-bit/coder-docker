@@ -6,15 +6,14 @@ services:
     container_name: coder-docker
     restart: unless-stopped
     volumes:
-      - "${TRIM_APPDEST}:/home/coder/target:rw"  # 容器内的工作目录
+      - "${TRIM_APPDEST}:/home/coder/.target:rw"  # 容器内的工作目录
       - "${TRIM_PKGETC}:/home/coder/.config/code-server"  # 配置文件路径
-      - "/vol1/1000/VscodeProject:/home/coder/project"  # 项目路径
+      - "${wizard_work_path}:/home/coder/project"  # 项目路径
     user: "1000:1000"
     environment:
-      - PASSWORD=password
       - TZ=Asia/Shanghai
       - PUID=1000
       - PGID=1001
-    entrypoint: ["/bin/sh", "-c"]
-    command: /home/coder/target/proxy/code-proxy 
+    entrypoint: []
+    command: ["/home/coder/.target/proxy/coder-proxy-linux-amd64"]
     network_mode: bridge

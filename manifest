@@ -1,8 +1,8 @@
 appname               = coder-docker
 version               = 1.0.0
 display_name          = Coder
-desc                  = `<div>code-server是一款运行在浏览器界面上的可以安装在任何机器上的VSCode程序</div>`
-arch                  = x86
+desc                  = `<div>code-server是一款运行在浏览器界面上的，可以安装在任何机器上的VSCode程序。</div>`
+arch                  = all
 source                = thirdparty
 maintainer            = code-server
 maintainer_url        = https://github.com/coder/code-server
