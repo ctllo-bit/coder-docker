@@ -5,17 +5,24 @@ services:
     image: codercom/code-server:latest
     container_name: code-server
     restart: unless-stopped
-    ports:
-      - "5333:8080"    # 端口如果冲突请修改冒号前面的端口号，冒号后面的不要改。
     volumes:
+      - "${TRIM_APPDEST}:/home/coder/target:rw"  # 容器内的工作目录
       - "/var/apps/vs-code/shares/data:/home/coder/.config/code-server"  # 配置文件路径
       - "/vol1/1000/VscodeProject:/home/coder/project"  # 项目路径
-    user: "1000:1001"
+    user: "1000:1000"
     environment:
       - PASSWORD=password
       - TZ=Asia/Shanghai
       - PUID=1000
       - PGID=1001
-    # 增加下面这一行，进入网页直接就是你的项目
-    command: --auth password --bind-addr 0.0.0.0:8080 /home/coder/project
+    # Go 程序的 os.Args[1:] 会自动接收这些参数并传给内置的 node  
+    entrypoint: ["/bin/sh", "-c"]
+    command: /home/coder/target/proxy/code-proxy 
+    # --prefix /app/vs-code --proxy-socket /home/coder/target/app.sock --auth none /home/coder/project
+    # --socket /home/coder/target/code-server.sock /home/coder/project
+    
+
+    # command: --auth password --bind-addr 0.0.0.0:8080 
     network_mode: bridge
+
+

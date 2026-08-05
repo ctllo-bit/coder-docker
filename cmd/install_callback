@@ -1,5 +1,11 @@
 #!/bin/bash
 
-### This script is called after the user installs the application.
+# 配置code-server文件
+CONFIG_FILE="/var/apps/vs-code/etc/config.yaml"
+cat > "$CONFIG_FILE" <<EOF
+socket: /var/apps/target/vscode-server.sock
+auth: none
+cert: false
+EOF
 
 exit 0
