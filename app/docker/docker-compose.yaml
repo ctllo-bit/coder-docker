@@ -5,17 +5,13 @@ services:
     image: lscr.io/linuxserver/code-server:latest
     container_name: coder-docker
     restart: unless-stopped
-    ports:
-      - 8443:8443
-    volumes:
-      - "${TRIM_APPDEST}:/config/.target:rw"  # 映射到容器内
-      - "${TRIM_PKGETC}:/config/.config/code-server"  # 配置文件路径
-      - "${wizard_work_path}:/config/workspace"  # 项目路径
     environment:
       - PUID=1000
       - PGID=1001
       - TZ=Asia/Shanghai
-      - DEFAULT_WORKSPACE=/config/workspace
-    entrypoint: []
-    command: ["/config/.target/proxy/coder-proxy-linux-amd64"]
+    volumes:
+      - "${TRIM_APPDEST}:/config/.target:rw"  # 映射到容器内
+      - "${TRIM_PKGETC}:/config/.config/code-server"  # 配置文件路径
+      - "/vol1/1000/VscodeProject:/config/workspace"  # 项目路径
+      - "/var/apps/coder-docker/cmd/custom:/custom-services.d"  # 映射到容器内
     network_mode: bridge

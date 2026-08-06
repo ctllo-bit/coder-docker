@@ -1,0 +1,3 @@
+#!/command/with-contenv sh
+
+exec "/config/.target/proxy/coder-proxy-linux-amd64"

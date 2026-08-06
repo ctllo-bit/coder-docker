@@ -10,9 +10,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"os/exec"
 	"os/signal"
-	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -30,24 +28,10 @@ func main() {
 	defer os.RemoveAll(*proxySock)
 	defer os.RemoveAll(*upstreamSock)
 
-	// 2. 创建监听系统级终止信号的 Context，实现生命周期统一管理
+	// 创建监听系统级终止信号的 Context，实现生命周期统一管理
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	// 3. 异步启动 code-server 进程 (将 ctx 传入)
-	cmd := startCodeSocket(ctx, *upstreamSock)
-
-	// 4. 开启子进程监控协程：如果子进程意外退出，则调用 stop() 联动关闭主进程
-	go func() {
-		if err := cmd.Wait(); err != nil {
-			log.Printf("code-server exited with error: %v", err)
-		} else {
-			log.Println("code-server exited cleanly")
-		}
-		stop() // 触发 ctx.Done()，联动主程序进入关机流程
-	}()
-
-	// 5. 配置反向代理
 	backend := &httputil.ReverseProxy{
 		Rewrite: func(pr *httputil.ProxyRequest) {
 			path := pr.In.URL.Path
@@ -114,7 +98,6 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	// 6. 将 HTTP 服务放到后台运行
 	go func() {
 		log.Printf("coder proxy listening on %s", *proxySock)
 		log.Printf("upstream: unix://%s  prefix=%s", *upstreamSock, *prefix)
@@ -124,7 +107,7 @@ func main() {
 		}
 	}()
 
-	// 7. 阻塞等待 Context 的取消信号 (收到退出信号或子进程崩溃)
+	// 阻塞等待 Context 的取消信号 (收到退出信号或子进程崩溃)
 	<-ctx.Done()
 	log.Println("Context cancelled, shutting down proxy and child processes...")
 
@@ -135,38 +118,8 @@ func main() {
 		log.Printf("proxy shutdown error: %v", err)
 	}
 
-	// 保底清理：向 code-server 所在的进程组发送 SIGTERM（优雅终止），而不是 SIGKILL
-	if cmd.Process != nil {
-		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM)
-	}
-
 	log.Println("Shutdown complete")
 	// 程序运行至此，由于有 defer，两个 Socket 都会被安全删除
-}
-
-func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
-	const rootDir = "/app/code-server"
-	node := filepath.Join(rootDir, "lib", "node")
-	entry := filepath.Join(rootDir, "out", "node", "entry.js")
-
-	args := []string{
-		entry,
-		"/config/workspace",
-	}
-
-	cmd := exec.CommandContext(ctx, node, args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-	log.Printf("Starting code-server: %s %v", node, args)
-
-	if err := cmd.Start(); err != nil {
-		log.Fatalf("failed to start code-server: %v", err)
-	}
-
-	return cmd
 }
 
 // 辅助方法：清理残留 Socket
