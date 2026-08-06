@@ -1,9 +1,6 @@
 #!/bin/bash
 
-cat > "${TRIM_PKGETC}/config.yaml" <<EOF
-socket: /config/.target/code-server.sock
-auth: none
-cert: false
-EOF
+#给 UID 1000 ACL（适合保持 user:1000:1001）,直接给这个 UID 权限
+setfacl -m u:1000:rwx "$(realpath /var/apps/coder-docker/target)"
 
 exit 0
