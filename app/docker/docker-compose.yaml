@@ -9,9 +9,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - "/var/apps/coder-docker/target:/home/coder/.target:rw"  # target路径
-      - "/vol1/1000/VscodeProject:/home/coder/project"  # 项目路径
+      - "${TRIM_APPDEST}:/home/coder/.target:rw"   # target路径
+      - "${wizard_work_path}:/home/coder/project"  # 项目路径
     entrypoint: []
     command: ["/home/coder/.target/proxy/coder-proxy-linux-amd64"]
     network_mode: bridge
-  
