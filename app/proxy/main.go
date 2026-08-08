@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	upstreamSock := flag.String("socket", "/home/coder/.local/share/code-server/code-server.sock", "upstream code-server unix socket")
+	upstreamSock := flag.String("socket", "/home/coder/.target/code-server.sock", "upstream code-server unix socket")
 	proxySock := flag.String("proxy-socket", "/home/coder/.target/app.sock", "this proxy's own unix socket")
 	prefix := flag.String("prefix", "/app/coder-docker", "URL prefix to strip")
 	flag.Parse()
@@ -150,6 +150,7 @@ func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 	args := []string{
 		entry,
 		"--socket", socketPath,
+		"--user-data-dir", "/home/coder/.data",
 		"--auth", "none",
 		"--cert", "false",
 		"/home/coder/project",
