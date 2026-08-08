@@ -8,5 +8,31 @@
                 "path": "docker"
             }
         ]
+    },
+    "data-share":
+    {
+        "shares":
+        [
+            {
+                "name": "Coder",
+                "permission":
+                {
+                    "rw":
+                    [
+                        "docker-coder"
+                    ]
+                }
+            },
+            {
+                "name": "Coder/data",
+                "permission":
+                {
+                    "rw":
+                    [
+                        "docker-coder"
+                    ]
+                }
+            }
+        ]
     }
 }

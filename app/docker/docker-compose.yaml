@@ -6,11 +6,14 @@ services:
     container_name: coder-docker
     restart: unless-stopped
     user: "1000:1001"
+    group_add:
+      - "1000"
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - "${TRIM_APPDEST}:/home/coder/.target:rw"   # target路径
-      - "${wizard_work_path}:/home/coder/project"  # 项目路径
+      - "/var/apps/coder-docker/target:/home/coder/.target:rw"  # target路径
+      - "/vol1/1000/VscodeProject:/home/coder/project"  # 项目路径
+      - "/var/apps/coder-docker/shares/Coder/data:/data" # 数据路径
     entrypoint: []
     command: ["/home/coder/.target/proxy/coder-proxy-linux-amd64"]
     network_mode: bridge
