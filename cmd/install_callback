@@ -2,7 +2,7 @@
 LOG_FILE="${TRIM_DATA_SHARE_PATHS%%:*}/info.log"
 ### This script is called after the user installs the application.
 log_msg() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> ${LOG_FILE}
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "${LOG_FILE}"
 }
 
 # 清理前后空格
