@@ -34,7 +34,7 @@ func main() {
 	defer stop()
 
 	// 3. 异步启动 code-server 进程 (将 ctx 传入)
-	cmd := startCodeSocket(ctx, *upstreamSock)
+	cmd := startCodeSocket(ctx)
 
 	// 4. 开启子进程监控协程：如果子进程意外退出，则调用 stop() 联动关闭主进程
 	go func() {
@@ -143,18 +143,11 @@ func main() {
 	// 程序运行至此，由于有 defer，两个 Socket 都会被安全删除
 }
 
-func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
+func startCodeSocket(ctx context.Context) *exec.Cmd {
 	node := "/usr/lib/code-server/lib/node"
 	entry := "/usr/lib/code-server/out/node/entry.js"
 
-	args := []string{
-		entry,
-		"--socket", socketPath,
-		"--user-data-dir", "/home/coder/.data",
-		"--auth", "none",
-		"--cert", "false",
-		"/home/coder/project",
-	}
+	args := []string{entry, "/home/coder/project"}
 
 	cmd := exec.CommandContext(ctx, node, args...)
 	cmd.Stdin = os.Stdin

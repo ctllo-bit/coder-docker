@@ -1,5 +1,37 @@
 #!/bin/bash
-
+LOG_FILE="${TRIM_DATA_SHARE_PATHS%%:*}/info.log"
 ### This script is called after the user installs the application.
+log_msg() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> ${LOG_FILE}
+}
+
+# 清理前后空格
+PASSWORD="$(echo -n "${wizard_password}" | xargs)"
+CONFIG_FILE="/var/apps/coder-docker/shares/Coder/.config/config.yaml"
+
+if [ -z "$PASSWORD" ]; then
+    AUTH_CONF="auth: none"
+    LOG_INFO="code-server configured successfully with NO authentication."
+else
+    HASH=$("${TRIM_APPDEST}/bin/code-password-hash" "$PASSWORD")
+    if [ $? -ne 0 ]; then
+        log_msg "failed to generate password hash"
+        exit 1
+    fi
+    AUTH_CONF="auth: password
+hashed-password: \"$HASH\""
+    LOG_INFO="code-server configured successfully with hashed password authentication."
+fi
+
+# 统一写入配置文件
+cat > "$CONFIG_FILE" <<EOF
+socket: /home/coder/.target/code-server.sock
+user-data-dir: /home/coder/.data
+${AUTH_CONF}
+cert: false
+EOF
+
+# 记录日志
+log_msg "$LOG_INFO"
 
 exit 0

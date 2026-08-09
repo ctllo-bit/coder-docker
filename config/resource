@@ -24,7 +24,17 @@
                 }
             },
             {
-                "name": "Coder/data",
+                "name": "Coder/.config",
+                "permission":
+                {
+                    "rw":
+                    [
+                        "docker-coder"
+                    ]
+                }
+            },
+            {
+                "name": "Coder/code-server",
                 "permission":
                 {
                     "rw":

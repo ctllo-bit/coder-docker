@@ -1,0 +1,64 @@
+[
+    {
+        "stepTitle": "欢迎安装",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "在开始使用前，请确保您知晓并了解相关开源项目协议及条款。"
+            },
+            {
+                "type": "tips",
+                "helpText": "请访问<a target=\"_blank\" href=\"https://github.com/coder/code-server\">Github项目地址</a> 了解项目信息及开源协议。"
+            },
+            {
+                "type": "switch",
+                "field": "agree_terms",
+                "label": "我已知晓并同意遵守上述开源项目相关协议及服务条款",
+                "rules": [
+                    {
+                        "required": true,
+                        "message": "请勾选《我已知晓并同意遵守上述开源项目相关协议及服务条款》"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "stepTitle": "初始化",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "应用新建目录为root权限，为了避免权限问题导致 git 操作失败，"
+            },
+            {
+                "type": "tips",
+                "helpText": "请手动去存储空间新建目录或选择已有的目录，然后复制原始路径粘贴到下方。"
+            },
+            {
+                "type": "text",
+                "field": "wizard_work_path",
+                "label": "工作目录",
+                "initValue": "/vol1/1000/VscodeProject",
+                "rules": [
+                    {
+                        "required": true,
+                        "message": "请输入工作目录路径"
+                    },
+                    {
+                        "pattern": "^/vol[0-9]+/1000/[^/ ]+(/[^/ ]+)*/?$",
+                        "message": "路径格式必须为 /vol数字/1000/xxx，且不能包含空格"
+                    }
+                ]
+            },
+            {
+                "type": "tips",
+                "helpText": "（可选）设置密码后，访问应用时需要输入密码，不填写则无密码。"
+            },
+            {
+                "type": "password",
+                "field": "wizard_password",
+                "label": "访问密码"
+            }
+        ]
+    }
+]
