@@ -153,6 +153,7 @@ func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 		"/home/coder/project",
 	}
 
+	sureProjectPermission()
 	cmd := exec.CommandContext(ctx, node, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -166,6 +167,17 @@ func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 	}
 
 	return cmd
+}
+
+// 确保项目路径的权限正确
+func sureProjectPermission() {
+	cmd := exec.Command("chmod", "700", "/home/coder/project")
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("chmod failed: %v, output: %s", err, output)
+		return
+	}
 }
 
 // 辅助方法：清理残留 Socket

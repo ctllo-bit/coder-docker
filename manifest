@@ -1,5 +1,5 @@
 appname               = coder-docker
-version               = 1.0.0
+version               = 1.0.1
 display_name          = Coder
 desc                  = `<div>code-server是一款运行在浏览器界面上的，可以安装在任何机器上的VSCode程序。</div>`
 arch                  = all
