@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -34,7 +35,7 @@ func main() {
 	defer stop()
 
 	// 3. 异步启动 code-server 进程 (将 ctx 传入)
-	cmd := startCodeSocket(ctx)
+	cmd := startCodeSocket(ctx, *upstreamSock)
 
 	// 4. 开启子进程监控协程：如果子进程意外退出，则调用 stop() 联动关闭主进程
 	go func() {
@@ -115,8 +116,7 @@ func main() {
 
 	// 6. 将 HTTP 服务放到后台运行
 	go func() {
-		log.Printf("coder proxy listening on %s", *proxySock)
-		log.Printf("upstream: unix://%s  prefix=%s", *upstreamSock, *prefix)
+		logInfo("coder-proxy listening on %s  prefix=%s", *proxySock, *prefix)
 
 		if err := server.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("server error: %v", err)
@@ -143,11 +143,15 @@ func main() {
 	// 程序运行至此，由于有 defer，两个 Socket 都会被安全删除
 }
 
-func startCodeSocket(ctx context.Context) *exec.Cmd {
+func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 	node := "/usr/lib/code-server/lib/node"
 	entry := "/usr/lib/code-server/out/node/entry.js"
 
-	args := []string{entry, "/home/coder/project"}
+	args := []string{
+		entry,
+		"--socket", socketPath,
+		"/home/coder/project",
+	}
 
 	cmd := exec.CommandContext(ctx, node, args...)
 	cmd.Stdin = os.Stdin
@@ -171,4 +175,10 @@ func cleanupSockets(socks ...string) {
 			log.Fatalf("failed to remove old socket %s: %v", sock, err)
 		}
 	}
+}
+
+// 辅助方法：打印时间
+func logInfo(format string, args ...interface{}) {
+	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
+	fmt.Printf("[%s] info  %s\n", timestamp, fmt.Sprintf(format, args...))
 }

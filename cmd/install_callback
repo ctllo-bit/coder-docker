@@ -25,7 +25,6 @@ fi
 
 # 统一写入配置文件
 cat > "$CONFIG_FILE" <<EOF
-socket: /home/coder/.target/code-server.sock
 user-data-dir: /home/coder/.data
 ${AUTH_CONF}
 cert: false
