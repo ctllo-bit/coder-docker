@@ -11,38 +11,32 @@ import (
 func initialize() {
 	flagFile := "/home/coder/.target/.initialized"
 
-	// 已初始化，直接跳过
 	if _, err := os.Stat(flagFile); err == nil {
-		log.Println("initialization already completed, skip")
 		return
 	}
 
-	log.Println("first initialization started")
+	dirs := []string{
+		"/home/coder/.data",
+		"/home/coder/.config",
+		"/home/coder/project",
+	}
+
+	for _, dir := range dirs {
+		os.MkdirAll(dir, 0750)
+		os.Chown(dir, 1000, 1001)
+		os.Chmod(dir, 0750)
+	}
 
 	// 执行所有者修正
-	chownDirs("1000:1001", "/home/coder/.target")
-	chownDirs("1000:1001", "/home/coder/.data")
+	chownDirs("0:0", "/home/coder/.target")
 
-	// 修正项目路径权限
-	os.Chown("/home/coder/project", 1000, 1001)
-	os.Chmod("/home/coder/project", 0700)
-
-	if err := patchProductJSON(); err != nil {
-		log.Printf("patch product.json failed: %v", err)
-	}
-	// 创建标记
 	file, err := os.Create(flagFile)
-	if err != nil {
-		log.Printf("failed to create init flag: %v", err)
-		return
+
+	if err == nil {
+		os.Chown(flagFile, 0, 0)
+		os.Chmod(flagFile, 0644)
+		file.Close()
 	}
-	defer file.Close()
-
-	// 修正 flag 权限
-	os.Chown(flagFile, 1000, 1001)
-	os.Chmod(flagFile, 0644)
-
-	log.Println("first initialization completed")
 }
 
 // 修改指定路径的所有者
