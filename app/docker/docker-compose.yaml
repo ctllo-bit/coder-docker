@@ -5,15 +5,14 @@ services:
     image: codercom/code-server:latest
     container_name: coder-docker
     restart: unless-stopped
-    user: "1000:1001"
-    group_add:
-      - "1000"
+    user: "0:0"
     environment:
+      - HOME=/home/coder
       - TZ=Asia/Shanghai
     volumes:
-      - "/var/apps/coder-docker/shares/Coder/.config:/home/coder/.config/code-server"   # 配置文件路径
-      - "/var/apps/coder-docker/shares/Coder/code-server:/home/coder/.data"       # 应用数据路径
       - "${TRIM_APPDEST}:/home/coder/.target"   # target路径
+      - "/var/apps/coder-docker/shares/Coder:/home/coder/.data"    # 应用数据路径
+      - "/var/apps/coder-docker/shares/Coder/config:/home/coder/.config"    # 配置文件路径
       - "${wizard_work_path}:/home/coder/project"  # 项目路径
     entrypoint: []
     command: ["/home/coder/.target/bin/coder-proxy-linux-amd64"]

@@ -92,6 +92,12 @@ func main() {
 		log.Fatalf("failed to listen on proxy socket %s: %v", *proxySock, err)
 	}
 
+	// 修改所有者为 UID 1000, GID 1001
+	if err := os.Chown(*proxySock, 1000, 1001); err != nil {
+		log.Printf("warning: failed to set socket ownership: %v", err)
+	}
+
+	// 修改权限位为 0660 (rw-rw----)
 	if err := os.Chmod(*proxySock, 0660); err != nil {
 		log.Printf("warning: failed to set socket permissions: %v", err)
 	}
@@ -143,31 +149,6 @@ func main() {
 	// 程序运行至此，由于有 defer，两个 Socket 都会被安全删除
 }
 
-func initOnce() {
-	flagFile := "/home/coder/.target/.initialized"
-
-	// 已初始化，直接跳过
-	if _, err := os.Stat(flagFile); err == nil {
-		log.Println("initialization already completed, skip")
-		return
-	}
-
-	log.Println("first initialization started")
-
-	// 确保项目路径的权限正确
-	os.Chmod("/home/coder/project", 0750)
-
-	// 创建标记
-	file, err := os.Create(flagFile)
-	if err != nil {
-		log.Printf("failed to create init flag: %v", err)
-		return
-	}
-	defer file.Close()
-
-	log.Println("first initialization completed")
-}
-
 func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 	node := "/usr/lib/code-server/lib/node"
 	entry := "/usr/lib/code-server/out/node/entry.js"
@@ -178,13 +159,21 @@ func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 		"/home/coder/project",
 	}
 
-	initOnce()
+	initialize()
 	cmd := exec.CommandContext(ctx, node, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+
+		Credential: &syscall.Credential{
+			Uid:    1000,
+			Gid:    1001,
+			Groups: []uint32{1000},
+		},
+	}
 	log.Printf("Starting code-server: %s %v", node, args)
 
 	if err := cmd.Start(); err != nil {

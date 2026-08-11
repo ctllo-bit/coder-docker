@@ -22,26 +22,6 @@
                         "docker-coder"
                     ]
                 }
-            },
-            {
-                "name": "Coder/.config",
-                "permission":
-                {
-                    "rw":
-                    [
-                        "docker-coder"
-                    ]
-                }
-            },
-            {
-                "name": "Coder/code-server",
-                "permission":
-                {
-                    "rw":
-                    [
-                        "docker-coder"
-                    ]
-                }
             }
         ]
     }

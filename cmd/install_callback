@@ -7,7 +7,14 @@ log_msg() {
 
 # 清理前后空格
 PASSWORD="$(echo -n "${wizard_password}" | xargs)"
-CONFIG_FILE="/var/apps/coder-docker/shares/Coder/.config/config.yaml"
+CONFIG_FILE="/var/apps/coder-docker/shares/Coder/config/code-server/config.yaml"
+
+# 自动提取父目录并确保其存在（如果存在则什么都不做，不存在则创建）
+TARGET_DIR="$(dirname "$CONFIG_FILE")"
+if [ ! -d "$TARGET_DIR" ]; then
+    log_msg "Directory $TARGET_DIR does not exist, creating..."
+    mkdir -p "$TARGET_DIR"
+fi
 
 if [ -z "$PASSWORD" ]; then
     AUTH_CONF="auth: none"
@@ -23,7 +30,7 @@ hashed-password: \"$HASH\""
     LOG_INFO="code-server configured successfully with hashed password authentication."
 fi
 
-# 统一写入配置文件
+# 安全写入配置文件
 cat > "$CONFIG_FILE" <<EOF
 user-data-dir: /home/coder/.data
 ${AUTH_CONF}
