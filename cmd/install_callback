@@ -7,7 +7,7 @@ log_msg() {
 
 # 清理前后空格
 PASSWORD="$(echo -n "${wizard_password}" | xargs)"
-CONFIG_FILE="/var/apps/coder-docker/shares/Coder/.config/config.yaml"
+CONFIG_PATH="/var/apps/coder-docker/shares/Coder/.config/code-server"
 
 if [ -z "$PASSWORD" ]; then
     AUTH_CONF="auth: none"
@@ -24,7 +24,8 @@ hashed-password: \"$HASH\""
 fi
 
 # 统一写入配置文件
-cat > "$CONFIG_FILE" <<EOF
+mkdir -p "$CONFIG_PATH"  
+cat > "${CONFIG_PATH}/config.yaml" <<EOF
 user-data-dir: /home/coder/.data
 ${AUTH_CONF}
 cert: false

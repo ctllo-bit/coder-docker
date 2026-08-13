@@ -143,6 +143,43 @@ func main() {
 	// 程序运行至此，由于有 defer，两个 Socket 都会被安全删除
 }
 
+func initOnce() {
+	flagFile := "/home/coder/.target/.initialized"
+
+	// 已初始化，直接跳过
+	if _, err := os.Stat(flagFile); err == nil {
+		log.Println("initialization already completed, skip")
+		return
+	}
+
+	log.Println("first initialization started")
+
+	// 修正项目路径所有者及权限
+	os.Chown("/home/coder/project", 1000, 1001)
+	os.Chmod("/home/coder/project", 0750)
+
+	// 修正配置文件目录所有者及权限
+	os.Chown("/home/coder/.target", 1000, 1001)
+	os.Chown("/home/coder/.data", 1000, 1001)
+	os.Chmod("/home/coder/.data", 0755)
+
+	// 修正配置文件目录权限
+	os.Chown("/home/coder/.config", -1, 1001)
+	os.Chmod("/home/coder/.config", 0750)
+	os.Chown("/home/coder/.config/code-server", -1, 1001)
+	os.Chown("/home/coder/.config/code-server/config.yaml", -1, 1001)
+	os.Chmod("/home/coder/.config/code-server/config.yaml", 0644)
+	// 创建标记
+	file, err := os.Create(flagFile)
+	if err != nil {
+		log.Printf("failed to create init flag: %v", err)
+		return
+	}
+	defer file.Close()
+
+	log.Println("first initialization completed")
+}
+
 func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 	node := "/usr/lib/code-server/lib/node"
 	entry := "/usr/lib/code-server/out/node/entry.js"
@@ -153,7 +190,7 @@ func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 		"/home/coder/project",
 	}
 
-	sureProjectPermission()
+	initOnce()
 	cmd := exec.CommandContext(ctx, node, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -167,17 +204,6 @@ func startCodeSocket(ctx context.Context, socketPath string) *exec.Cmd {
 	}
 
 	return cmd
-}
-
-// 确保项目路径的权限正确
-func sureProjectPermission() {
-	cmd := exec.Command("chmod", "700", "/home/coder/project")
-
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("chmod failed: %v, output: %s", err, output)
-		return
-	}
 }
 
 // 辅助方法：清理残留 Socket
