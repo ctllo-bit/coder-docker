@@ -9,8 +9,8 @@ services:
     group_add:
       - "1000"
     environment:
-      - TZ=Asia/Shanghai
-      - 'EXTENSIONS_GALLERY={"serviceUrl":"https://marketplace.visualstudio.com/_apis/public/gallery","cacheUrl":"https://vscode.blob.core.windows.net/gallery/index","itemUrl":"https://marketplace.visualstudio.com/items"}'
+      TZ: Asia/Shanghai
+      GIT_CONFIG_GLOBAL: /home/coder/.data/gitconfig
     volumes:
       - "/var/apps/coder-docker/shares/Coder/.config:/home/coder/.config"   # 配置文件路径
       - "/var/apps/coder-docker/shares/Coder/code-server:/home/coder/.data"       # 应用数据路径
